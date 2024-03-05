@@ -72,6 +72,7 @@ const getAll = async (req, res) => {
     include: [
       {
         model: Product,
+        where: { active: true },
         include: [
           {
             model: ProductImg,
