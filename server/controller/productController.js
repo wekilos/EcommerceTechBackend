@@ -462,8 +462,8 @@ const createFromExcel = async (req, res) => {
     SubCategoryId: product?.SubCategoryId,
     BrandId: product?.BrandId,
     ProductImgs: product.ProductImgs.map((productImg) => ({
-      src: productImg.src,
-      file_name: productImg.file_name,
+      src: productImg,
+      file_name: productImg,
     })),
   }));
 
