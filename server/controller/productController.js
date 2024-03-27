@@ -724,9 +724,11 @@ const Destroy = async (req, res) => {
   if (data) {
     console.log(data.ProductImgs);
     await data?.ProductImgs?.map((item) => {
-      fs?.unlink(item?.src, function (err) {
-        console.log(err);
-      });
+      item?.src != null &&
+        item?.src?.length > 0 &&
+        fs?.unlink(item?.src, function (err) {
+          console.log(err);
+        });
     });
 
     Product.destroy({
