@@ -219,7 +219,7 @@ router.delete(
 router.patch("/product/update", verifyToken, ProductControllers.update);
 router.patch("/product/delete/:id", verifyToken, ProductControllers.Delete);
 router.patch("/product/unDelete/:id", verifyToken, ProductControllers.unDelete);
-router.delete("/product/destroy/:id", verifyToken, ProductControllers.Destroy);
+router.delete("/product/destroy/:id", ProductControllers.Destroy);
 
 // Order Routes
 router.get("/order/all", cache.get, OrderControllers.getAll, cache.set);

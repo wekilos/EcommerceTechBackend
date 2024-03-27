@@ -722,8 +722,8 @@ const Destroy = async (req, res) => {
     where: { id: id },
   });
   if (data) {
-    data?.ProductImgs?.map((item) => {
-      fs.unlink(item?.src, function (err) {
+    await data?.ProductImgs?.map((item) => {
+      fs?.unlink(item?.src, function (err) {
         console.log(err);
       });
     });
