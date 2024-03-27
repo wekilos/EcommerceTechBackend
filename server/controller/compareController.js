@@ -26,6 +26,7 @@ const getAll = async (req, res) => {
             include: [
               {
                 model: ProductImg,
+                order: [["orderNum", "ASC"]],
               },
               {
                 model: ProductVideo,
@@ -62,7 +63,7 @@ const getAll = async (req, res) => {
 
 const getAllByPro = async (req, res) => {
   const { ProductId } = req.params;
-  const compro = await ComparePro.findOne({ where: ProductId });
+  const compro = await ComparePro.findOne({ where: { ProductId: ProductId } });
 
   if (compro) {
     await Compare.findAll({
@@ -75,6 +76,7 @@ const getAllByPro = async (req, res) => {
               include: [
                 {
                   model: ProductImg,
+                  order: [["orderNum", "ASC"]],
                 },
                 {
                   model: ProductVideo,
@@ -136,6 +138,7 @@ const getOne = async (req, res) => {
             include: [
               {
                 model: ProductImg,
+                order: [["orderNum", "ASC"]],
               },
               {
                 model: ProductVideo,

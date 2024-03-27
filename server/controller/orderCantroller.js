@@ -88,6 +88,7 @@ const getAll = async (req, res) => {
             include: [
               {
                 model: ProductImg,
+                order: [["orderNum", "ASC"]],
               },
               {
                 model: ProductVideo,
@@ -146,6 +147,7 @@ const getOne = async (req, res) => {
               include: [
                 {
                   model: ProductImg,
+                  order: [["orderNum", "ASC"]],
                 },
                 {
                   model: ProductVideo,
@@ -552,6 +554,7 @@ const Hasabat = async (req, res) => {
             include: [
               {
                 model: ProductImg,
+                order: [["orderNum", "ASC"]],
               },
               {
                 model: ProductVideo,
@@ -659,6 +662,7 @@ const HasabatUser = async (req, res) => {
                         include: [
                           {
                             model: ProductImg,
+                            order: [["orderNum", "ASC"]],
                           },
                           {
                             model: ProductVideo,
@@ -706,6 +710,7 @@ const HasabatUser = async (req, res) => {
                     include: [
                       {
                         model: ProductImg,
+                        order: [["orderNum", "ASC"]],
                       },
                       {
                         model: ProductVideo,

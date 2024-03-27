@@ -2,6 +2,7 @@ var Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const {
   Category,
+  SubCategory,
   Product,
   ProductImg,
   ProductVideo,
@@ -68,14 +69,15 @@ const getAll = async (req, res) => {
         deleted: false,
       };
 
-  Category.findAll({
+  SubCategory.findAll({
     include: [
+      { model: Category },
       {
         model: Product,
         // where: { [Op.and]: [{ active: "true" }, { deleted: "false" }] },
         where: { active: true },
         required: false,
-        order: [["id", "ASC"]],
+        order: [["id", "DESC"]],
         include: [
           {
             model: ProductImg,
@@ -116,36 +118,15 @@ const getAll = async (req, res) => {
 
 const getOne = async (req, res) => {
   const { id } = req.params;
-  const data = await Category.findOne({ where: { id: id } });
+  const data = await SubCategory.findOne({ where: { id: id } });
   if (data) {
-    Category.findOne({
+    SubCategory.findOne({
       include: [
+        { model: Category },
         {
           model: Product,
           where: { [Op.and]: [{ active: true }, { deleted: false }] },
           required: false,
-          order: [["id", "ASC"]],
-          include: [
-            {
-              model: ProductImg,
-              order: [["orderNum", "ASC"]],
-              // attributes: ["id", "orderNum"],
-            },
-            {
-              model: ProductVideo,
-            },
-            {
-              model: ProductParametr,
-              include: [
-                {
-                  model: Parametr,
-                },
-                {
-                  model: ProductParametrItem,
-                },
-              ],
-            },
-          ],
         },
       ],
       where: {
@@ -160,7 +141,7 @@ const getOne = async (req, res) => {
         res.json({ error: err });
       });
   } else {
-    res.send("BU ID boyuncha Category yok!");
+    res.send("BU ID boyuncha SubCategory yok!");
   }
 };
 
@@ -175,7 +156,7 @@ const create = async (req, res) => {
     console.log(err);
   });
 
-  Category.create({
+  SubCategory.create({
     name_tm,
     name_ru,
     name_en,
@@ -188,7 +169,7 @@ const create = async (req, res) => {
     })
     .catch((err) => {
       console.log(err);
-      res.json("create Category:", err);
+      res.json("create SubCategory:", err);
     });
 };
 
@@ -196,9 +177,9 @@ const update = async (req, res) => {
   const { name_tm, name_ru, name_en, orderNum, is_favorite, id } = req.body;
   const files = req?.files?.img;
 
-  const data = await Category.findOne({ where: { id: id } });
+  const data = await SubCategory.findOne({ where: { id: id } });
   if (!data) {
-    res.json("Bu Id boyuncha Category yok!");
+    res.json("Bu Id boyuncha SubCategory yok!");
   } else {
     let img_direction = data?.img;
     if (files) {
@@ -213,7 +194,7 @@ const update = async (req, res) => {
     } else {
     }
 
-    Category.update(
+    SubCategory.update(
       {
         name_tm,
         name_ru,
@@ -233,16 +214,16 @@ const update = async (req, res) => {
       })
       .catch((err) => {
         console.log(err);
-        res.json("update Category:", err);
+        res.json("update SubCategory:", err);
       });
   }
 };
 
 const unDelete = async (req, res) => {
   const { id } = req.params;
-  let data = await Category.findOne({ where: { id: id } });
+  let data = await SubCategory.findOne({ where: { id: id } });
   if (data) {
-    Category.update(
+    SubCategory.update(
       {
         deleted: false,
         active: true,
@@ -261,15 +242,15 @@ const unDelete = async (req, res) => {
         res.json({ err: err });
       });
   } else {
-    res.json("Bu Id Boyuncha Category yok!");
+    res.json("Bu Id Boyuncha SubCategory yok!");
   }
 };
 
 const Delete = async (req, res) => {
   const { id } = req.params;
-  let data = await Category.findOne({ where: { id: id } });
+  let data = await SubCategory.findOne({ where: { id: id } });
   if (data) {
-    Category.update(
+    SubCategory.update(
       {
         deleted: true,
         active: false,
@@ -288,18 +269,18 @@ const Delete = async (req, res) => {
         res.json({ err: err });
       });
   } else {
-    res.json("Bu Id Boyuncha Category yok!");
+    res.json("Bu Id Boyuncha SubCategory yok!");
   }
 };
 
 const Destroy = async (req, res) => {
   const { id } = req.params;
-  const data = await Category.findOne({ where: { id: id } });
+  const data = await SubCategory.findOne({ where: { id: id } });
   if (data) {
     fs.unlink(data?.img, function (err) {
       console.log(err);
     });
-    Category.destroy({
+    SubCategory.destroy({
       where: {
         id: id,
       },
@@ -312,7 +293,7 @@ const Destroy = async (req, res) => {
         res.json({ err: err });
       });
   } else {
-    res.json("Bu Id Boyuncha Category yok!");
+    res.json("Bu Id Boyuncha SubCategory yok!");
   }
 };
 exports.getAll = getAll;

@@ -20,7 +20,7 @@ const getAll = async (req, res) => {
       {
         model: Product,
         include: [
-          { model: ProductImg },
+          { model: ProductImg, order: [["orderNum", "ASC"]] },
           { model: ProductVideo },
           {
             model: ProductParametr,
@@ -58,7 +58,7 @@ const getOne = async (req, res) => {
         {
           model: Product,
           include: [
-            { model: ProductImg },
+            { model: ProductImg, order: [["orderNum", "ASC"]] },
             { model: ProductVideo },
             {
               model: ProductParametr,

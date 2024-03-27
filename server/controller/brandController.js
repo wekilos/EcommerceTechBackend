@@ -1,6 +1,6 @@
 var Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const { Brand, Product } = require("../../models/index.js");
+const { Brand, Product, ProductImg } = require("../../models/index.js");
 
 const fs = require("fs");
 
@@ -62,6 +62,15 @@ const getOne = async (req, res) => {
       include: [
         {
           model: Product,
+          required: false,
+          order: [["id", "ASC"]],
+          include: [
+            {
+              model: ProductImg,
+              order: [["orderNum", "ASC"]],
+              // attributes: ["id", "orderNum"],
+            },
+          ],
         },
       ],
       where: {

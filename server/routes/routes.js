@@ -12,6 +12,7 @@ const UserControllers = require("../controller/usersController");
 const UserAddressControllers = require("../controller/usersAddressController");
 const AdminControllers = require("../controller/adminController");
 const CategoryControllers = require("../controller/categoryController");
+const SubCategoryControllers = require("../controller/subcategoryController");
 const BrandsControllers = require("../controller/brandController");
 const ProductControllers = require("../controller/productController");
 const OrderControllers = require("../controller/orderCantroller");
@@ -144,6 +145,37 @@ router.delete(
   CategoryControllers.Destroy
 );
 
+//   SubCategories Routes
+router.get(
+  "/subcategory/all",
+  cache.get,
+  SubCategoryControllers.getAll,
+  cache.set
+);
+router.get(
+  "/subcategory/:id",
+  cache.get,
+  SubCategoryControllers.getOne,
+  cache.set
+);
+router.post("/subcategory/create", verifyToken, SubCategoryControllers.create);
+router.patch("/subcategory/update", verifyToken, SubCategoryControllers.update);
+router.patch(
+  "/subcategory/delete/:id",
+  verifyToken,
+  SubCategoryControllers.Delete
+);
+router.patch(
+  "/subcategory/unDelete/:id",
+  verifyToken,
+  SubCategoryControllers.unDelete
+);
+router.delete(
+  "/subcategory/destroy/:id",
+  verifyToken,
+  SubCategoryControllers.Destroy
+);
+
 // Brands Routes
 router.get("/brand/all", cache.get, BrandsControllers.getAll, cache.set);
 router.get("/brand/:id", cache.get, BrandsControllers.getOne, cache.set);
@@ -163,6 +195,11 @@ router.get(
 );
 router.get("/product/:id", cache.get, ProductControllers.getOne, cache.set);
 router.post("/product/create", verifyToken, ProductControllers.create);
+router.post(
+  "/product/create/excel",
+  verifyToken,
+  ProductControllers.createFromExcel
+);
 router.post("/product/upl-img/:id", verifyToken, ProductControllers.uploadsImg);
 router.post(
   "/product/upl-video/:id",
@@ -384,6 +421,17 @@ router.delete(
   OrderDescriptionControllers.Destroy
 );
 
+// Using Rules Rotes
+router.get("/useRule/all", cache.get, UsingRulesControllers.getAll, cache.set);
+router.get("/useRule/:id", cache.get, UsingRulesControllers.getOne, cache.set);
+router.post("/useRule/create", UsingRulesControllers.create);
+router.patch("/useRule/update", verifyToken, UsingRulesControllers.update);
+router.delete(
+  "/useRule/destroy/:id",
+  verifyToken,
+  UsingRulesControllers.Destroy
+);
+
 // Privacy Rotes
 router.get("/privacy/all", cache.get, PrivacyControllers.getAll, cache.set);
 router.get("/privacy/:id", cache.get, PrivacyControllers.getOne, cache.set);
@@ -400,17 +448,6 @@ router.delete(
   "/question/destroy/:id",
   verifyToken,
   QuestionControllers.Destroy
-);
-
-// Using Rules Rotes
-router.get("/useRule/all", cache.get, UsingRulesControllers.getAll, cache.set);
-router.get("/useRule/:id", cache.get, UsingRulesControllers.getOne, cache.set);
-router.post("/useRule/create", UsingRulesControllers.create);
-router.patch("/useRule/update", verifyToken, UsingRulesControllers.update);
-router.delete(
-  "/useRule/destroy/:id",
-  verifyToken,
-  UsingRulesControllers.Destroy
 );
 
 // Compare Config Routes

@@ -85,6 +85,10 @@ module.exports = {
       CategoryId: {
         type: Sequelize.INTEGER,
       },
+      SubCategoryId: {
+        type: Sequelize.INTEGER,
+        defaultValue: null,
+      },
       BrandId: {
         type: Sequelize.INTEGER,
       },

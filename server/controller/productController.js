@@ -2,6 +2,7 @@ var Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const {
   Category,
+  SubCategory,
   Product,
   Brand,
   ProductImg,
@@ -20,6 +21,8 @@ const getAll = async (req, res) => {
     active,
     deleted,
     CategoryId,
+    SubCategoryId,
+    SubCategoryIds,
     CategoryIds,
     BrandId,
     BrandIds,
@@ -48,6 +51,17 @@ const getAll = async (req, res) => {
     CategoryIdS && CategoryIdS.length > 0
       ? { CategoryId: { [Op.in]: CategoryIdS } }
       : null;
+
+  const SubCategoryIdS =
+    SubCategoryIds &&
+    SubCategoryIds?.filter((item) => {
+      return item != "0";
+    });
+  const SubCategoryIDs =
+    SubCategoryIdS && SubCategoryIdS.length > 0
+      ? { SubCategoryId: { [Op.in]: SubCategoryIdS } }
+      : null;
+
   const BrandIDs =
     BrandIds && BrandIds.length > 0 ? { BrandId: { [Op.in]: BrandIds } } : null;
   const Title =
@@ -93,6 +107,14 @@ const getAll = async (req, res) => {
     (CategoryId
       ? {
           CategoryId: CategoryId,
+        }
+      : null);
+
+  const SubCategoryID =
+    SubCategoryId &&
+    (SubCategoryId
+      ? {
+          SubCategoryId: SubCategoryId,
         }
       : null);
 
@@ -171,12 +193,16 @@ const getAll = async (req, res) => {
     include: [
       {
         model: ProductImg,
+        order: [["orderNum", "ASC"]],
       },
       {
         model: ProductVideo,
       },
       {
         model: Category,
+      },
+      {
+        model: SubCategory,
       },
       {
         model: Brand,
@@ -202,6 +228,7 @@ const getAll = async (req, res) => {
         Active,
         Deleted,
         CategoryID,
+        SubCategoryID,
         BrandID,
         Is_discount,
         Is_moresale,
@@ -211,6 +238,7 @@ const getAll = async (req, res) => {
         StartPrice,
         EndPrice,
         CategoryIDs,
+        SubCategoryIDs,
         BrandIDs,
       ],
     },
@@ -245,12 +273,15 @@ const getOne = async (req, res) => {
         {
           model: Category,
         },
-
+        {
+          model: SubCategory,
+        },
         {
           model: Brand,
         },
         {
           model: ProductImg,
+          order: [["orderNum", "ASC"]],
         },
         { model: ProductVideo },
         {
@@ -308,6 +339,7 @@ const create = async (req, res) => {
     link,
     orderNum,
     CategoryId,
+    SubCategoryId,
     BrandId,
   } = req.body;
 
@@ -366,6 +398,7 @@ const create = async (req, res) => {
     link,
     orderNum,
     CategoryId,
+    SubCategoryId,
     BrandId,
   })
     .then(async (data) => {
@@ -392,6 +425,55 @@ const create = async (req, res) => {
     .catch((err) => {
       console.log(err);
       res.json("create Product:", err);
+    });
+};
+
+const createFromExcel = async (req, res) => {
+  const array = JSON.parse(req.body.array);
+
+  // Flatten the data to insert into the database
+  const flatData = array?.map((product) => ({
+    name: product.name,
+    name_tm: product?.name_tm,
+    name_ru: product?.name_ru,
+    name_en: product?.name_en,
+    color_tm: product?.color_tm,
+    color_ru: product?.color_ru,
+    color_en: product?.color_en,
+    description_ru: product?.description_ru,
+    description_tm: product?.description_tm,
+    description_en: product?.description_en,
+    bar_code: product?.bar_code,
+    came_price: product?.came_price,
+    price: product?.price,
+    discount_price: product?.discount_price,
+    is_discount: product?.is_discount,
+    usd_price: product?.price,
+    usd_price_discount: product?.discount_price,
+    is_valyuta: product?.is_valyuta,
+    discount: product?.discount,
+    stock: product?.stock,
+    is_moresale: product?.is_moresale,
+    is_new: product?.is_new,
+    is_selected: product?.is_selected,
+    link: product?.link,
+    orderNum: product?.orderNum,
+    CategoryId: product?.CategoryId,
+    SubCategoryId: product?.SubCategoryId,
+    BrandId: product?.BrandId,
+    ProductImgs: product.ProductImgs.map((productImg) => ({
+      src: productImg.src,
+      file_name: productImg.file_name,
+    })),
+  }));
+
+  Product.bulkCreate(flatData, { include: [ProductImg] })
+    .then((data) => {
+      res.json({ msg: "created!", data: data });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json("create Product error:", err);
     });
 };
 
@@ -422,6 +504,7 @@ const update = async (req, res) => {
     link,
     orderNum,
     CategoryId,
+    SubCategoryId,
     BrandId,
     id,
   } = req.body;
@@ -457,6 +540,7 @@ const update = async (req, res) => {
         link,
         orderNum,
         CategoryId,
+        SubCategoryId,
         BrandId,
       },
       {
@@ -633,14 +717,20 @@ const Delete = async (req, res) => {
 
 const Destroy = async (req, res) => {
   const { id } = req.params;
-  const data = await Product.findOne({ where: { id } });
+  const data = await Product.findOne({
+    include: { model: ProductImg },
+    where: { id: id },
+  });
   if (data) {
-    fs.unlink(data?.img, function (err) {
-      console.log(err);
+    data?.ProductImgs?.map((item) => {
+      fs.unlink(item?.src, function (err) {
+        console.log(err);
+      });
     });
+
     Product.destroy({
       where: {
-        id,
+        id: id,
       },
     })
       .then(() => {
@@ -727,12 +817,13 @@ const Hasabat = async (req, res) => {
             {
               model: Category,
             },
-
+            { model: SubCategory },
             {
               model: Brand,
             },
             {
               model: ProductImg,
+              order: [["orderNum", "ASC"]],
             },
             { model: ProductVideo },
             {
@@ -806,12 +897,15 @@ const HasabatUser = async (req, res) => {
             {
               model: Category,
             },
-
+            {
+              model: SubCategory,
+            },
             {
               model: Brand,
             },
             {
               model: ProductImg,
+              order: [["orderNum", "ASC"]],
             },
             { model: ProductVideo },
             {
@@ -856,6 +950,7 @@ exports.Hasabat = Hasabat;
 exports.getAll = getAll;
 exports.getOne = getOne;
 exports.create = create;
+exports.createFromExcel = createFromExcel;
 exports.update = update;
 exports.Delete = Delete;
 exports.unDelete = unDelete;

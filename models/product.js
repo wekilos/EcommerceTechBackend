@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       Product.hasMany(models.ProductImg);
       Product.hasMany(models.ProductVideo);
       Product.belongsTo(models.Category);
+      Product.belongsTo(models.SubCategory);
       Product.belongsTo(models.Brand);
       Product.hasMany(models.ProductParametr);
       Product.hasMany(models.ComparePro);
