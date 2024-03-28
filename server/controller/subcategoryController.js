@@ -148,20 +148,20 @@ const getOne = async (req, res) => {
 const create = async (req, res) => {
   const { name_tm, name_ru, name_en, is_favorite, orderNum } = req.body;
 
-  const files = req?.files?.img;
+  // const files = req?.files?.img;
 
-  let randomNumber = Math.floor(Math.random() * 999999999999);
-  let img_direction = `./uploads/category/` + randomNumber + `${files.name}`;
-  fs.writeFile(img_direction, files.data, function (err) {
-    console.log(err);
-  });
+  // let randomNumber = Math.floor(Math.random() * 999999999999);
+  // let img_direction = `./uploads/category/` + randomNumber + `${files.name}`;
+  // fs.writeFile(img_direction, files.data, function (err) {
+  //   console.log(err);
+  // });
 
   SubCategory.create({
     name_tm,
     name_ru,
     name_en,
     orderNum,
-    img: img_direction,
+    // img: img_direction,
     is_favorite,
   })
     .then(async (data) => {
@@ -175,24 +175,24 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   const { name_tm, name_ru, name_en, orderNum, is_favorite, id } = req.body;
-  const files = req?.files?.img;
+  // const files = req?.files?.img;
 
   const data = await SubCategory.findOne({ where: { id: id } });
   if (!data) {
     res.json("Bu Id boyuncha SubCategory yok!");
   } else {
-    let img_direction = data?.img;
-    if (files) {
-      fs.unlink(data?.img, function (err) {
-        console.log(err);
-      });
-      let randomNumber = Math.floor(Math.random() * 999999999999);
-      img_direction = `./uploads/category/` + randomNumber + `${files.name}`;
-      fs.writeFile(img_direction, files.data, function (err) {
-        console.log(err);
-      });
-    } else {
-    }
+    // let img_direction = data?.img;
+    // if (files) {
+    //   fs.unlink(data?.img, function (err) {
+    //     console.log(err);
+    //   });
+    //   let randomNumber = Math.floor(Math.random() * 999999999999);
+    //   img_direction = `./uploads/category/` + randomNumber + `${files.name}`;
+    //   fs.writeFile(img_direction, files.data, function (err) {
+    //     console.log(err);
+    //   });
+    // } else {
+    // }
 
     SubCategory.update(
       {
@@ -200,7 +200,7 @@ const update = async (req, res) => {
         name_ru,
         name_en,
         orderNum,
-        img: img_direction,
+        // img: img_direction,
         is_favorite,
       },
       {
@@ -277,9 +277,11 @@ const Destroy = async (req, res) => {
   const { id } = req.params;
   const data = await SubCategory.findOne({ where: { id: id } });
   if (data) {
-    fs.unlink(data?.img, function (err) {
-      console.log(err);
-    });
+    data?.img &&
+      data?.img?.length > 0 &&
+      fs?.unlink(data?.img, function (err) {
+        console.log(err);
+      });
     SubCategory.destroy({
       where: {
         id: id,

@@ -296,9 +296,11 @@ const Destroy = async (req, res) => {
   const { id } = req.params;
   const data = await Category.findOne({ where: { id: id } });
   if (data) {
-    fs.unlink(data?.img, function (err) {
-      console.log(err);
-    });
+    data?.img &&
+      data?.img?.length > 0 &&
+      fs?.unlink(data?.img, function (err) {
+        console.log(err);
+      });
     Category.destroy({
       where: {
         id: id,
